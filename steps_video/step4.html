@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+  <video id="mainVideo" width="500" height="294" autoplay playsinline></video>
+  <canvas id="mainCanvas" width="500" height="294"></canvas>
+  <script>
+    const videoEl = document.getElementById('mainVideo');
+    const canvasEl = document.getElementById('mainCanvas');
+    const mainCtx = canvasEl.getContext('2d');
+    const constraints = { audio: true, video: { width: 500, height: 294 } }
+
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then(function (stream) {
+        videoEl.addEventListener('play', videoComputeFrame, false);
+        videoEl.srcObject = stream;
+      })
+
+    function videoComputeFrame() {
+      mainCtx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight);
+
+      const frame = mainCtx.getImageData(0, 0, videoEl.videoWidth, videoEl.videoHeight);
+      const length = frame.data.length / 4; // 500 * 294 = 147.000
+
+      for (let i = 0; i < length; i++) {
+        const redIndex = i * 4 + 0;
+        const greenIndex = i * 4 + 1;
+        const blueIndex = i * 4 + 2;
+
+        const red = frame.data[redIndex];
+        const green = frame.data[greenIndex];
+        const blue = frame.data[blueIndex];
+
+        if (red > 170 && green < 100 && blue < 100) {
+          frame.data[redIndex] = 0;
+          frame.data[greenIndex] = 0;
+          frame.data[blueIndex] = 0;
+        }
+      }
+
+      mainCtx.putImageData(frame, 0, 0);
+      setTimeout(videoComputeFrame, 1000 / 60);
+    }
+  </script>
+</body>
+
+</html>

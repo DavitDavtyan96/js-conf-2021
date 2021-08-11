@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+  <script>
+
+    const getAudioData = function (callback) {
+      request = new XMLHttpRequest();
+      request.open('GET', '/media/audio_1.mp3', true);
+      request.responseType = 'arraybuffer';
+      request.onload = function () {
+        callback(request.response)
+      }
+      request.send();
+    };
+
+    getAudioData(function (audioData) {
+      console.log(audioData);
+    });
+
+  </script>
+</body>
+
+</html>

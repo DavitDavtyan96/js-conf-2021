@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+	<video id="mainVideo" width="500" height="294" autoplay playsinline></video>
+	<canvas id="mainCanvas" width="500" height="294"></canvas>
+	<script>
+		const videoEl = document.getElementById('mainVideo');
+		const canvasEl = document.getElementById('mainCanvas');
+		const mainCtx = canvasEl.getContext('2d');
+		const constraints = { audio: true, video: { width: 500, height: 294 } }
+
+		navigator.mediaDevices.getUserMedia(constraints)
+			.then(function (stream) {
+				videoEl.addEventListener('play', videoComputeFrame, false);
+				videoEl.srcObject = stream;
+			})
+
+		function videoComputeFrame() {
+			mainCtx.drawImage(videoEl, 0, 0, videoEl.videoWidth, videoEl.videoHeight);
+			setTimeout(videoComputeFrame, 1000 / 60);
+		}
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+	<video id="mainVideo" width="500" height="294" autoplay playsinline></video>
+
+	<script>
+		const videoEl = document.getElementById('mainVideo');
+
+		const constraints = { audio: true, video: { width: 500, height: 294 } }
+
+		navigator.mediaDevices.getUserMedia(constraints)
+			.then(function (stream) {
+				videoEl.srcObject = stream;
+			})
+			.catch(function (err) {
+				/* handle the error */
+			});
+	</script>
+</body>
+
+</html>

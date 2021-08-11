@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+  <script>
+
+    const getAudioData = function (callback) {
+      request = new XMLHttpRequest();
+      request.open('GET', '/media/audio_1.mp3', true);
+      request.responseType = 'arraybuffer';
+      request.onload = function () {
+        callback(request.response)
+      }
+      request.send();
+    };
+
+    const audioCtx = new window.AudioContext();
+    const channels = 2;
+
+    getAudioData(function (audioData) {
+
+      audioCtx.decodeAudioData(audioData, function (buffer) {
+        console.log(buffer);
+
+        for (let channel = 0; channel < channels; channel++) {
+          const currentBuffer = buffer.getChannelData(channel);
+          console.log(currentBuffer);
+        }
+      });
+
+    });
+  </script>
+</body>
+
+</html>
