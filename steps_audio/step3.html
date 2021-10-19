@@ -6,49 +6,49 @@
 <body>
   <script>
 
-    const getAudioData = function (callback) {
+    const getAudioData = function (filename, callback) {
       request = new XMLHttpRequest();
-      request.open('GET', '/media/audio_1.mp3', true);
+      request.open('GET', filename, true);
       request.responseType = 'arraybuffer';
       request.onload = function () {
-        callback(request.response)
+        callback(request.response);
       }
       request.send();
     };
-
-    const addOrRemoveByPercent = function (current, percent, add) {
-      const value = current * percent / 100;
-      return add ? current + value : current - value;
-    }
 
     const audioCtx = new window.AudioContext();
     const source = audioCtx.createBufferSource();
     const channels = 2;
 
-    getAudioData(function (audioData) {
+    getAudioData('/media/rain.mp3', function (audioData) {
+      audioCtx.decodeAudioData(audioData, function (rainBuffer) {
+        mergeData(rainBuffer)
+      })
+    })
 
-      audioCtx.decodeAudioData(audioData, function (buffer) {
-        for (let channel = 0; channel < channels; channel++) {
-          const currentBuffer = buffer.getChannelData(channel);
+    function mergeData(rainBuffer) {
+      getAudioData('/media/audio_1.mp3', function (audioData) {
 
-          for (let i = 0; i < buffer.length; i++) {
-            if (i % 1000 === 0) {
-              currentBuffer[i] = Math.random() * 2 - 1;
+        audioCtx.decodeAudioData(audioData, function (buffer) {
+          for (let channel = 0; channel < channels; channel++) {
+            const currentBuffer = buffer.getChannelData(channel);
+            const rainBuffer = rainBuffer.getChannelData(channel);
+
+            for (let i = 0; i < buffer.length; i++) {
+              currentBuffer[i] = currentBuffer[i] + (rainBuffer[i]);
             }
 
-            if (i % 1000 === 0) {
-              currentBuffer[i] = addOrRemoveByPercent(currentBuffer[i], 500, true);
-            }
           }
-        }
-        source.buffer = buffer;
+          source.buffer = buffer;
+        });
+
+        source.connect(audioCtx.destination)
+        source.loop = true;
+        source.start();
+
       });
+    }
 
-      source.connect(audioCtx.destination)
-      source.loop = true;
-      source.start();
-
-    });
   </script>
 </body>
 
