@@ -9,7 +9,7 @@
 	<script>
 		const videoEl = document.getElementById('mainVideo');
 
-		const constraints = { audio: true, video: { width: 500, height: 294 } }
+		const constraints = { audio: false, video: { width: 500, height: 294 } }
 
 		navigator.mediaDevices.getUserMedia(constraints)
 			.then(function (stream) {

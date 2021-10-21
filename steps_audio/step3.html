@@ -32,10 +32,10 @@
         audioCtx.decodeAudioData(audioData, function (buffer) {
           for (let channel = 0; channel < channels; channel++) {
             const currentBuffer = buffer.getChannelData(channel);
-            const rainBuffer = rainBuffer.getChannelData(channel);
+            const currentRainBuffer = rainBuffer.getChannelData(channel);
 
             for (let i = 0; i < buffer.length; i++) {
-              currentBuffer[i] = currentBuffer[i] + (rainBuffer[i]);
+              currentBuffer[i] = currentBuffer[i] + currentRainBuffer[i];
             }
 
           }
