@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+	<script>
+
+		const getAudioData = function (filename, callback) {
+			request = new XMLHttpRequest();
+			request.open('GET', filename, true);
+			request.responseType = 'arraybuffer';
+			request.onload = function () {
+				callback(request.response);
+			}
+			request.send();
+		};
+
+		const audioCtx = new window.AudioContext();
+		const source = audioCtx.createBufferSource();
+		const channels = 2;
+
+		getAudioData('/media/rain.mp3', function (audioData) {
+			audioCtx.decodeAudioData(audioData, function (rainBuffer) {
+				mergeData(rainBuffer)
+			})
+		})
+
+		function mergeData(rainBuffer) {
+			getAudioData('/media/audio_1.mp3', function (audioData) {
+
+				audioCtx.decodeAudioData(audioData, function (buffer) {
+					for (let channel = 0; channel < channels; channel++) {
+						const currentBuffer = buffer.getChannelData(channel);
+						const currentRainBuffer = rainBuffer.getChannelData(channel);
+
+						for (let i = 0; i < buffer.length; i++) {
+							currentBuffer[i] = currentBuffer[i] + currentRainBuffer[i];
+						}
+
+					}
+					source.buffer = buffer;
+				});
+
+				source.connect(audioCtx.destination)
+				source.loop = true;
+				source.start();
+
+			});
+		}
+
+	</script>
+</body>
+
+</html>
